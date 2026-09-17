@@ -102,7 +102,7 @@
                     <p class="description">I work in automation: i create various bots, parsers, chrome extensions, and mobile apps.</p>
                     <div class="buttons">
                         <a href="#portfolio" class="btn btn-primary">My Projects</a>
-                        <a href="https://t.me/flrancer" target=+_blank" class="btn btn-secondary"><i class="fab fa-telegram"></i> Telegram</a>
+                        <a href="https://t.me/flrancer" target=+_blank" class="btn btn-secondary"><i class="fab fa-telegram"></i> My Ai Assistant</a>
                     </div>
                 </div>
                 <div class="scroll-indicator"><i class="fas fa-chevron-down"></i></div>
@@ -235,7 +235,7 @@
                 <div class="content fade-in-section">
                     <h2 class="title">Contact <span class="highlight">Me</span></h2>
                     <div class="buttons">
-                         <a href="https://t.me/flrancer" target=+_blank" class="btn btn-secondary"><i class="fab fa-telegram"></i> Telegram</a>
+                         <a href="https://t.me/flrancer" target=+_blank" class="btn btn-secondary"><i class="fab fa-telegram"></i> My Ai Assistant</a>
                     </div>
                 </div>
             </section>
