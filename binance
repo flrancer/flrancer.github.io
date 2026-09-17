@@ -1,0 +1,223 @@
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+<div id="trade">
+	<div id="USD1"></div>
+	<div id="BTC"></div>
+	<div id="ETH"></div>
+	<div id="BNB"></div>
+	<div id="SOL"></div>
+	<div id="INJ"></div>
+	<div id="JTO"></div>
+	
+	<div id="AVAX"></div>
+	<div id="ADA"></div>
+	<div id="ICP"></div>
+	<div id="TRB"></div>
+	<div id="ORDI"></div>
+	
+	
+	<div id="XAI"></div>
+	<div id="PEPE"></div>
+	<div id="SHIB"></div>
+	<div id="FLOKI"></div>
+	<div id="MEME"></div>
+	<div id="DOGE"></div>
+	<div id="QI"></div>
+	<div id="AUCTION"></div>
+	<div id="LINK"></div>
+	
+	<div id="XRP"></div>
+	<div id="TIA"></div>
+	<div id="LINK"></div>
+	<div id="SHIB"></div>
+	<div id="FDRY"></div>
+	<div id="STX"></div>
+	<div id="OP"></div>
+	<div id="ARB"></div>
+	<div id="SEI"></div>
+	<div id="XAI"></div>
+	<div id="MATIC"></div>
+	<div id="TRY"></div>
+	<div id="LDO"></div>
+	
+	<div id="ARS"></div>
+	<div id="BIDR"></div>
+	<div id="IDRT"></div>
+</div>
+
+<script>
+	var stat = {};
+	var volume = {};
+	var socket = new WebSocket('wss://stream.binance.com/stream');
+	var params = new URLSearchParams(window.location.search);
+	var currency = params.get('currency');
+	
+	if( ! currency )
+		currency = 'FDUSD';
+	
+	currency = new RegExp(currency, 'gi');
+	
+	
+	socket.onopen = function(){
+		socket.send('{"method":"SUBSCRIBE","params":["!miniTicker@arr@1000ms"],"id":1}');
+	}
+	
+	socket.onmessage = function( event ){
+		let data = JSON.parse( event.data );
+		
+		
+		if( data.data == undefined )
+			return;
+			
+		let trade = $('#trade');
+			
+		for( let k in data.data ){
+			
+			if( ! data.data[ k ].s.match( currency ) )
+			// if( ! data.data[ k ].s.match(/USDT/) )
+			// if( ! data.data[ k ].s.match(/FDUSD/) )
+			// if( ! data.data[ k ].s.match(/(BNB|BTC|ETH|SOL|AVAX|ORDI|MEME|TRB|AUCTION|INJ|QI|ICP|JTO|VTHO|BTTC|SUPER|BONK|PERP|SKL|MINA|DEGO|NEAR|ELF|APT|BAKE|JOE|AGLD|DOGE|ADA|POLS|RAY|1000SATS|ACE|YGG|WOO|FET|FUN|SEI|TIA|ATOM|XNO|AAVE|XRP|JASMY|MOVR|ARB|DOT|FIL|WILD|SUPER|STROJ|BLZ|ALPHA|OP|DYDX|STX|LINK|BONK)USDT/) )
+				continue;
+			
+			// if( data.data[ k ].s.match(/BNBUSDT/) )
+				// console.log( data.data[ k ] ); 
+
+			data.data[ k ].s = data.data[ k ].s.replace(currency, '');
+			// data.data[ k ].s = data.data[ k ].s.replace('USDT', '');
+			// data.data[ k ].s = data.data[ k ].s.replace('FDUSD', '');
+			
+			let x = Number( data.data[ k ].c ).toFixed(6);
+			
+			if( stat[ data.data[ k ].s ] == undefined )
+				stat[ data.data[ k ].s ] = x;
+			
+			// if( ! data.data[ k ].s.match(/(BNB|BTC|ETH|SOL|AVAX|ORDI|MEME|TRB|AUCTION|INJ|QI|ICP|JTO|VTHO|BTTC|SUPER|BONK|PERP|SKL|MINA|DEGO|NEAR|ELF|APT|BAKE|JOE|AGLD|DOGE|ADA|POLS|RAY|1000SATS|ACE|YGG|WOO|FET|FUN|SEI|TIA|ATOM|XNO|AAVE|XRP|JASMY|MOVR|ARB|DOT|FIL|WILD|SUPER|STROJ|BLZ|ALPHA|OP|DYDX|STX|LINK|BONK)USDT/) ){
+				
+				if( volume[ data.data[ k ].s ] == undefined )
+					volume[ data.data[ k ].s ] = data.data[ k ].q;
+				
+				// let key = data.data[ k ].s +'-'+ new Date().getDay();
+				
+				// volume  = localStorage.getItem('volume');
+				
+				// if( ! volume )
+					// volume = data.data[ k ].q;
+				
+				// console.log( volume ); 
+
+				// localStorage.setItem('volume', volume);
+				
+				// xVolume = parseFloat( volume[ data.data[ k ].s ] / data.data[ k ].q * 100 - 100 ).toFixed(2);
+				xVolume = parseFloat( data.data[ k ].q / volume[ data.data[ k ].s ] * 100 - 100 ).toFixed(2);
+			// }
+			
+			
+			let step = 'up';
+			
+			if( x < stat[ data.data[ k ].s ] )
+				step = 'down';
+			else if( stat[ data.data[ k ].s ] == x )
+				step = 'mark';
+			
+			stat[ data.data[ k ].s ] = x;
+			let x2 = parseFloat( data.data[ k ].c / data.data[ k ].o * 100 - 100 ).toFixed(2);
+			let x3 = parseFloat( data.data[ k ].c / data.data[ k ].h * 100 - 100 ).toFixed(2);
+			let x4 = parseFloat( data.data[ k ].c / data.data[ k ].l * 100 - 100 ).toFixed(2);
+			let x5 = parseFloat( Math.abs( x3 ) + Math.abs( x4 ) ).toFixed(2);
+			
+			// let x6 = Math.abs( parseFloat( Math.abs( x3 ) / x5 * 100 ) ).toFixed(2);
+			// let x7 = Math.abs( parseFloat( Math.abs( x4 ) / x5 * 100 ) ).toFixed(2);
+			let x6 = Math.abs( parseFloat( Math.abs( x3 ) / x5 ) ).toFixed(1);
+			let x7 = Math.abs( parseFloat( Math.abs( x4 ) / x5 ) );
+			
+			let sx = 'up';
+			if( x2 < 0 ) sx = 'down'; else if( x2 == 0 ) sx = 'mark';
+				
+			let sx3 = 'up';
+			if( x3 < 0 ) sx3 = 'down'; else if( x3 == 0 ) sx3 = 'mark';
+			
+			let sx4 = 'up';
+			if( x4 < 0 ) sx4 = 'down'; else if( x4 == 0 ) sx4 = 'mark';
+			
+			let info = '<div class="item" title="'+( 'min: '+ data.data[ k ].l +"\nmax: "+ data.data[ k ].h )+'"><div class="inline short '+( x2 > 0 ? 'GREEN' : 'RED' )+'">'+ data.data[ k ].s +'</div><div class="inline short '+ step +'">'+ Number( parseFloat( x ) ).toLocaleString('en-US', { minimumFractionDigits: 6, maximumFractionDigits: 6 }) +' <sup class="'+ sx +'">'+ x2 +'</sup> </div> <div class="inline short"> <span class="gray">'+ x6 +'</span> <sup class="'+ sx3 +'">'+ x3 +'</sup>  <span class="gray">'+ x7.toFixed(1) +'</span> <sup class="'+ sx4 +'">'+ x4 +'</sup> <div class="progress"><div class="ask" style="width: '+( x7 * 100 )+'%"></div><div class="bid"></div></div> </div> <div class="inline short gray">'+ x5 +'</div> <div class="inline gray short">'+ Number( parseInt( data.data[ k ].q ) / 1000000 ).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +'M <sup class="'+( xVolume < 0 ? 'down' : 'up' )+'">'+ xVolume +'</sup></div>  </div>';
+			
+			if( ! $('#'+ data.data[ k ].s ).length )
+				trade.append('<div id="'+ data.data[ k ].s +'">'+ info +'</div>');
+			else
+				$('#'+ data.data[ k ].s ).html( info );
+		}
+	}
+
+</script>
+
+<style>
+	
+	body{
+		color: #fff;
+		background: #000;
+	}
+	
+	.RED{
+		color:#f00;
+	}
+	
+	.GREEN{
+		color: #1bea45;
+	}
+	
+	.item{
+		margin: 10px;
+	}
+	
+	.item:hover{
+		background: #cccccc12;
+	}
+	
+	.up{
+		color: #1bea45;
+	}
+	
+	.down{
+		color: #f00;
+	}
+
+	sup{
+		font-size: 14px;
+	}
+	
+	.gray{
+		color: #ccc;
+	}
+	
+	.inline{
+		width: 550px;
+		font-size: 24pt;
+		display: inline-block;
+	}
+	
+	.inline.short{
+		width: 250px;
+	}
+	
+	.progress{
+		position: relative;
+	}
+	
+	.progress .ask,
+	.progress .bid{
+		height: 5px;
+	}
+	
+	.progress .ask{
+		z-index: 9;
+		background: #1bea45;
+		position: absolute;
+	}
+	
+	.progress .bid{
+		width: 100%;
+		background: #f00;
+		position: absolute;
+	}
+	
+</style>
